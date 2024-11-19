@@ -1,3 +1,5 @@
+from asyncio import sleep
+
 import pyuseragents
 
 from src.utils.request_client.request_client import RequestClient
@@ -17,6 +19,7 @@ async def get_superform_data(address: str, proxy: Proxy | None) -> tuple[str, fl
         'user-agent': pyuseragents.random(),
     }
 
+
     while True:
         request_client = RequestClient(proxy)
         response_json = await request_client.make_request(
@@ -24,11 +27,22 @@ async def get_superform_data(address: str, proxy: Proxy | None) -> tuple[str, fl
             url=f'https://api.superform.xyz/superrewards/seasonXP/1/{address}',
             headers=headers,
         )
+        if not response_json:
+            await sleep(0.2)
+            continue
+
         season_boosted_xp_final = response_json["seasonBoostedXPFinal"]
+        if season_boosted_xp_final == 0:
+            season_boosted_xp_final = response_json["seasonBoostedXP"]
+
         tournaments = response_json.get("tournaments", [])
 
-        super_fren_data = {}
 
+
+        if not tournaments:
+            return address, season_boosted_xp_final, {}
+
+        super_fren_data = {}
         for tournament in tournaments:
             super_fren = tournament.get("superFren")
             highest_tier = tournament.get("highestTierHeld")
