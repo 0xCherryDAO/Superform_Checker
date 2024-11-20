@@ -78,9 +78,9 @@ async def main() -> None:
             console.log(f'Checking {address}...')
             proxy_index = index % len(proxies)
             tasks.append(process_address(address, proxy_index))
-            time_to_sleep = random.randint(PAUSE_BETWEEN_WALLETS[0], PAUSE_BETWEEN_WALLETS[1])
+            time_to_sleep = random.uniform(PAUSE_BETWEEN_WALLETS[0], PAUSE_BETWEEN_WALLETS[1])
             if time_to_sleep != 0:
-                console.log(f'Sleeping {time_to_sleep} seconds...')
+                console.log(f'Sleeping {time_to_sleep:.2f} seconds...')
                 await sleep(time_to_sleep)
         results = await gather(*tasks)
 
